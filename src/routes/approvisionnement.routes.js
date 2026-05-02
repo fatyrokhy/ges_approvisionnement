@@ -1,9 +1,12 @@
 import express from 'express';
 import approvisionnementController from '../controllers/approvisionnement.controller.js';
 import validate from '../middlewares/validate.middleware.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
+import authorize from '../middlewares/authorize.middleware.js';
 import { createApprovisionnementSchema } from '../validations/approvisionnement.schema.js';
 
 const router = express.Router();
+router.use(authMiddleware);
 
 /**
  * @swagger
@@ -11,6 +14,8 @@ const router = express.Router();
  *   post:
  *     summary: Enregistrer un nouvel approvisionnement (et incrémente le stock)
  *     tags: [Approvisionnements]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -25,12 +30,14 @@ const router = express.Router();
  *     responses:
  *       201: { description: Approvisionnement créé et stock mis à jour }
  */
-router.post('/', validate(createApprovisionnementSchema), approvisionnementController.create);
+router.post('/', authorize('admin'), validate(createApprovisionnementSchema), approvisionnementController.create);
 
 /**
  * @swagger
  * /api/approvisionnements:
  *   get:
+ *     security:
+ *       - bearerAuth: []
  *     summary: Liste tous les approvisionnements
  *     tags: [Approvisionnements]
  *     responses:
@@ -44,11 +51,16 @@ router.get('/', approvisionnementController.getAll);
  *   get:
  *     summary: Récupérer un approvisionnement par ID
  *     tags: [Approvisionnements]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
+ *     responses:
+ *       200: { description: Détails de l'approvisionnement }
+ *       404: { description: Approvisionnement non trouvé }
  */
 router.get('/:id', approvisionnementController.getById);
 
@@ -58,12 +70,14 @@ router.get('/:id', approvisionnementController.getById);
  *   delete:
  *     summary: Supprimer un approvisionnement
  *     tags: [Approvisionnements]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
  */
-router.delete('/:id', approvisionnementController.delete);
+router.delete('/:id', authorize('admin'), approvisionnementController.delete);
 
 export default router;

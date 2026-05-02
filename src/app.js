@@ -6,6 +6,7 @@ import swaggerSpec from './config/swagger.js';
 import fournisseurRoutes from './routes/fournisseur.routes.js';
 import produitRoutes from './routes/produit.routes.js';
 import approvisionnementRoutes from './routes/approvisionnement.routes.js';
+import authRoutes from './routes/auth.routes.js';
 import errorHandler from './middlewares/error-handler.middleware.js';
 import notFound from './middlewares/not-found.middleware.js';
 import { corsMiddleware, corsPreFlight } from './config/cors.js';
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes principales
+app.use('/api/auth', authRoutes);
 app.use('/api/fournisseurs', fournisseurRoutes);
 app.use('/api/produits', produitRoutes);
 app.use('/api/approvisionnements', approvisionnementRoutes);

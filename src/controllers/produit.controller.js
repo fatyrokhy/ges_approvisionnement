@@ -34,7 +34,8 @@ class ProduitController {
       const produit = await produitService.update(req.params.id, req.body);
       successResponse(res, produit, "Produit modifié avec succès");
     } catch (error) {
-      errorResponse(res, error.message, 400);
+      const status = error.message === "Produit non trouvé" ? 404 : 400;
+      errorResponse(res, error.message, status);
     }
   }
 
@@ -43,7 +44,8 @@ class ProduitController {
       await produitService.delete(req.params.id);
       successResponse(res, null, "Produit supprimé avec succès");
     } catch (error) {
-      errorResponse(res, error.message, 400);
+      const status = error.message === "Produit non trouvé" ? 404 : 400;
+      errorResponse(res, error.message, status);
     }
   }
 
@@ -52,7 +54,8 @@ class ProduitController {
       const produit = await produitService.incrementStock(req.params.id, req.body);
       successResponse(res, produit, "Stock incrémenté avec succès");
     } catch (error) {
-      errorResponse(res, error.message, 400);
+      const status = error.message === "Produit non trouvé" ? 404 : 400;
+      errorResponse(res, error.message, status);
     }
   }
 
@@ -61,7 +64,8 @@ class ProduitController {
       const produit = await produitService.decrementStock(req.params.id, req.body);
       successResponse(res, produit, "Stock décrémenté avec succès");
     } catch (error) {
-      errorResponse(res, error.message, 400);
+      const status = error.message === "Produit non trouvé" ? 404 : 400;
+      errorResponse(res, error.message, status);
     }
   }
 }

@@ -1,10 +1,13 @@
 import express from 'express';
 import produitController from '../controllers/produit.controller.js';
 import validate from '../middlewares/validate.middleware.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
+import authorize from '../middlewares/authorize.middleware.js';
 import { createProduitSchema, updateProduitSchema, stockUpdateSchema } from '../validations/produit.schema.js';
 import { upload } from '../config/cloudinary.js';
 
 const router = express.Router();
+router.use(authMiddleware);
 
 /**
  * ====================== ROUTE SPÉCIALE UPLOAD IMAGE ======================
@@ -30,12 +33,15 @@ const router = express.Router();
  *               image:
  *                 type: string
  *                 format: binary
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       201: { description: Produit créé avec image }
  *       400: { description: Données invalides }
  */
-router.post('/upload', 
-  upload.single('image'), 
+router.post('/upload',
+  authorize('admin'),
+  upload.single('image'),
   async (req, res, next) => {
     try {
       if (!req.file) {
@@ -74,10 +80,12 @@ router.post('/upload',
  *             properties:
  *               libelle: { type: string }
  *               prixUnitaire: { type: number }
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       201: { description: Produit créé }
  */
-router.post('/', validate(createProduitSchema), produitController.create);
+router.post('/', authorize('admin'), validate(createProduitSchema), produitController.create);
 
 /**
  * @swagger
@@ -85,6 +93,8 @@ router.post('/', validate(createProduitSchema), produitController.create);
  *   get:
  *     summary: Liste tous les produits
  *     tags: [Produits]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200: { description: Liste des produits }
  */
@@ -96,6 +106,8 @@ router.get('/', produitController.getAll);
  *   get:
  *     summary: Récupérer un produit par ID
  *     tags: [Produits]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -110,13 +122,16 @@ router.get('/:id', produitController.getById);
  *   put:
  *     summary: Modifier un produit
  *     tags: [Produits]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
  */
-router.put('/:id', validate(updateProduitSchema), produitController.update);
+router.put('/:id', authorize('admin'), validate(updateProduitSchema), produitController.update);
+router.patch('/:id', authorize('admin'), validate(updateProduitSchema), produitController.update);
 
 /**
  * @swagger
@@ -130,7 +145,7 @@ router.put('/:id', validate(updateProduitSchema), produitController.update);
  *         required: true
  *         schema: { type: integer }
  */
-router.patch('/:id/increment', validate(stockUpdateSchema), produitController.incrementStock);
+router.patch('/:id/increment', authorize('admin'), validate(stockUpdateSchema), produitController.incrementStock);
 
 /**
  * @swagger
@@ -138,13 +153,15 @@ router.patch('/:id/increment', validate(stockUpdateSchema), produitController.in
  *   patch:
  *     summary: Diminuer le stock d'un produit
  *     tags: [Produits]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
  */
-router.patch('/:id/decrement', validate(stockUpdateSchema), produitController.decrementStock);
+router.patch('/:id/decrement', authorize('admin'), validate(stockUpdateSchema), produitController.decrementStock);
 
 /**
  * @swagger
@@ -152,12 +169,14 @@ router.patch('/:id/decrement', validate(stockUpdateSchema), produitController.de
  *   delete:
  *     summary: Supprimer un produit
  *     tags: [Produits]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
  */
-router.delete('/:id', produitController.delete);
+router.delete('/:id', authorize('admin'), produitController.delete);
 
 export default router;

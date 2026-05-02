@@ -30,6 +30,15 @@ model Produit {
   approvisionnements Approvisionnement[]
 }
 
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("user")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 model Approvisionnement {
   id           Int      @id @default(autoincrement())
   date         DateTime @default(now())

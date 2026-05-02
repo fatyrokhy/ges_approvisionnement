@@ -1,5 +1,5 @@
 
-import { successResponse, errorResponse } from '../utils/reponse.utils.js';
+import { errorResponse } from '../utils/reponse.utils.js';
 
  const validate = (schema) => (req, res, next) => {
   try {

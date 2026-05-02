@@ -14,33 +14,47 @@ class ProduitService {
     return await produitRepo.findAll();
   }
 
+//   async getById(id) {
+//     const produit = await produitRepo.findById(id);
+//     if (!produit) throw new Error("Produit non trouvé");
+//     return produit;
+//   }
+
   async getById(id) {
-    const produit = await produitRepo.findById(id);
-    if (!produit) throw new Error("Produit non trouvé");
-    return produit;
-  }
+  const produit = await produitRepo.findById(Number(id));
+  if (!produit) throw new Error("Produit non trouvé");
+  return produit;
+}
 
   async update(id, data) {
+    const produit = await produitRepo.findById(id);
+    if (!produit) throw new Error("Produit non trouvé");
+
     const validated = updateProduitSchema.parse(data);
     return await produitRepo.update(id, validated);
   }
 
   async delete(id) {
+    const produit = await produitRepo.findById(id);
+    if (!produit) throw new Error("Produit non trouvé");
     return await produitRepo.delete(id);
   }
 
   // Gestion du stock
   async incrementStock(id, data) {
+    const produit = await produitRepo.findById(id);
+    if (!produit) throw new Error("Produit non trouvé");
+
     const { quantite } = stockUpdateSchema.parse(data);
     return await produitRepo.incrementStock(id, quantite);
   }
 
   async decrementStock(id, data) {
-    const { quantite } = stockUpdateSchema.parse(data);
-    
     const produit = await produitRepo.findById(id);
     if (!produit) throw new Error("Produit non trouvé");
-    
+
+    const { quantite } = stockUpdateSchema.parse(data);
+
     if (produit.quantiteEnStock < quantite) {
       throw new Error("Stock insuffisant pour cette opération");
     }

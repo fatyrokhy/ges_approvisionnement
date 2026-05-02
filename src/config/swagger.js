@@ -26,7 +26,7 @@ const swaggerDefinition = {
       },
     },
   },
-  // security: [{ bearerAuth: [] }], // Décommente si tu ajoutes l'authentification plus tard
+  security: [{ bearerAuth: [] }],
 };
 
 const options = {
